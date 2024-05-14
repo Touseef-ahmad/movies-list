@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -21,10 +23,26 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { TwitterIcon, GithubIcon, SearchIcon } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
+import { ChangeEvent, ChangeEventHandler, useState } from "react";
+import { searchMovies } from "@/app/utils/api";
+import { debounce } from "lodash";
 
 export const Navbar = () => {
+  const [search, setSearch] = useState("");
+
+  const debouncedSearchMovies = debounce(searchMovies, 500);
+
+  // Handle the input change event
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearch(query);
+    debouncedSearchMovies(query);
+  };
+
   const searchInput = (
     <Input
+      value={search}
+      onChange={handleChange}
       aria-label="Search"
       classNames={{
         inputWrapper: "bg-default-100",

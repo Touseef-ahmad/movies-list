@@ -3,7 +3,18 @@ const BASE_URL = "http://localhost:3000/api";
 export async function fetchNowPlaying(): Promise<ApiResponse | null> {
   try {
     const response = await fetch(`${BASE_URL}/movies/now_playing`);
-    console.log(response, typeof response);
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching now playing movies:", error);
+    return null;
+  }
+}
+
+export async function searchMovies(query: string): Promise<ApiResponse | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/discover?query=${query}`);
+
     return await response.json();
   } catch (error) {
     console.error("Error fetching now playing movies:", error);

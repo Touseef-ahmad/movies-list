@@ -3,7 +3,7 @@ import MovieCard from "@/components/movieCard";
 
 export default async function Home() {
   const movies = await fetchNowPlaying();
-  console.log("movies results =>>>>", movies?.data.results);
+
   return (
     <section className="flex flex-wrap items-center justify-center gap-4 py-8 md:py-10">
       {movies?.data.results?.map((movie) => (
