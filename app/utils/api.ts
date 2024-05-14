@@ -1,6 +1,9 @@
-export async function fetchNowPlaying() {
+import { ApiResponse } from "./types";
+const BASE_URL = "http://localhost:3000/api";
+export async function fetchNowPlaying(): Promise<ApiResponse | null> {
   try {
-    const response = await fetch("/api/movies/now_playing");
+    const response = await fetch(`${BASE_URL}/movies/now_playing`);
+    console.log(response, typeof response);
     return await response.json();
   } catch (error) {
     console.error("Error fetching now playing movies:", error);
@@ -8,9 +11,9 @@ export async function fetchNowPlaying() {
   }
 }
 
-export async function fetchPopular() {
+export async function fetchPopular(): Promise<ApiResponse | null> {
   try {
-    const response = await fetch("/api/movies/popular");
+    const response = await fetch(`${BASE_URL}/movies/popular`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching popular movies:", error);
@@ -18,9 +21,9 @@ export async function fetchPopular() {
   }
 }
 
-export async function fetchTopRated() {
+export async function fetchTopRated(): Promise<ApiResponse | null> {
   try {
-    const response = await fetch("/api/movies/top_rated");
+    const response = await fetch(`${BASE_URL}/movies/top_rated`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching top rated movies:", error);
@@ -28,9 +31,9 @@ export async function fetchTopRated() {
   }
 }
 
-export async function fetchUpcoming() {
+export async function fetchUpcoming(): Promise<ApiResponse | null> {
   try {
-    const response = await fetch("/api/movies/upcoming");
+    const response = await fetch(`${BASE_URL}/movies/upcoming`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching upcoming movies:", error);
@@ -48,9 +51,9 @@ export async function fetchMovieById(movieId: string) {
   }
 }
 
-export async function fetchGenres() {
+export async function fetchGenres(): Promise<ApiResponse | null> {
   try {
-    const response = await fetch("/api/genre/list");
+    const response = await fetch(`${BASE_URL}/genre/list`);
     return await response.json();
   } catch (error) {
     console.error("Error fetching movie genres:", error);
