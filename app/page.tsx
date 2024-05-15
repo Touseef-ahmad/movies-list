@@ -1,51 +1,116 @@
-import { Link } from "@nextui-org/link";
-import { Snippet } from "@nextui-org/snippet";
-import { Code } from "@nextui-org/code"
-import { button as buttonStyles } from "@nextui-org/theme";
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
+"use client";
+
+import MovieCard from "@/components/movieCard";
+import { useSearchParams } from "next/navigation";
+import { debounce } from "lodash";
+import { useEffect, useState } from "react";
+
+import { Input } from "@nextui-org/input";
+import { SearchIcon } from "@/components/icons";
+import { Kbd } from "@nextui-org/kbd";
+import { Pagination } from "@nextui-org/react";
+import { ApiResponse, watchlist } from "./utils/types";
+import {
+  addToWatchlist,
+  fetchNowPlaying,
+  getWatchlist,
+  removeFromWatchList,
+} from "./utils/api";
 
 export default function Home() {
-	return (
-		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-			<div className="inline-block max-w-lg text-center justify-center">
-				<h1 className={title()}>Make&nbsp;</h1>
-				<h1 className={title({ color: "violet" })}>beautiful&nbsp;</h1>
-				<br />
-				<h1 className={title()}>
-					websites regardless of your design experience.
-				</h1>
-				<h2 className={subtitle({ class: "mt-4" })}>
-					Beautiful, fast and modern React UI library.
-				</h2>
-			</div>
+  const [movies, setMovies] = useState<ApiResponse | null>(null);
+  const [watchList, setWatchList] = useState<watchlist[] | null>(null);
+  const searchParams = useSearchParams();
+  const search = searchParams.get("query");
+  const [searchInputValue, setSearchInputValue] = useState("iron man");
+  const [page, setPage] = useState(1);
 
-			<div className="flex gap-3">
-				<Link
-					isExternal
-					href={siteConfig.links.docs}
-					className={buttonStyles({ color: "primary", radius: "full", variant: "shadow" })}
-				>
-					Documentation
-				</Link>
-				<Link
-					isExternal
-					className={buttonStyles({ variant: "bordered", radius: "full" })}
-					href={siteConfig.links.github}
-				>
-					<GithubIcon size={20} />
-					GitHub
-				</Link>
-			</div>
+  const debouncedSearchMovies = debounce(
+    async (page: number, query?: string) => {
+      const movies = await fetchNowPlaying(page, query);
+      setMovies(movies);
+    },
+    500
+  );
 
-			<div className="mt-8">
-				<Snippet hideSymbol hideCopyButton variant="flat">
-					<span>
-						Get started by editing <Code color="primary">app/page.tsx</Code>
-					</span>
-				</Snippet>
-			</div>
-		</section>
-	);
+  useEffect(() => {
+    debouncedSearchMovies(page, searchInputValue);
+  }, [page, searchInputValue]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const query = search || "iron man";
+        const moviesData = await fetchNowPlaying(page, query);
+        setMovies(moviesData);
+
+        const watchListData = await getWatchlist();
+        setWatchList(watchListData);
+      } catch (error) {
+        // Handle errors here
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [search, page]);
+
+  const searchInput = (
+    <Input
+      value={searchInputValue}
+      onChange={(e) => setSearchInputValue(e.target.value)}
+      aria-label="Search"
+      classNames={{
+        inputWrapper: "bg-default-100",
+        input: "text-sm",
+      }}
+      endContent={
+        <Kbd className="hidden md:inline-block" keys={["command"]}>
+          K
+        </Kbd>
+      }
+      labelPlacement="outside"
+      placeholder="Search..."
+      startContent={
+        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
+      }
+      type="search"
+    />
+  );
+
+  return (
+    <section className="flex flex-col items-center">
+      <div className="max-w-screen-md "> {searchInput}</div>
+      <div className="flex flex-wrap items-center justify-center gap-4 py-8 md:py-10">
+        {movies?.data.results?.map((movie) => {
+          const isAlreadyIncluded = Boolean(
+            watchList?.filter((watch) => watch.id === movie.id).length
+          );
+          return (
+            <MovieCard
+              onClickButton={async () => {
+                if (!isAlreadyIncluded) {
+                  await addToWatchlist(movie);
+                } else {
+                  await removeFromWatchList(movie.id);
+                }
+                const watchList = await getWatchlist();
+                setWatchList(watchList);
+              }}
+              addedToWatchlist={isAlreadyIncluded}
+              key={movie.id}
+              movie={movie}
+            />
+          );
+        })}
+      </div>
+      {movies?.data && (
+        <Pagination
+          total={movies?.data.total_pages}
+          onChange={(page) => setPage(page)}
+          initialPage={1}
+        />
+      )}
+    </section>
+  );
 }

@@ -1,26 +1,12 @@
-# Next.js & NextUI Template
+# Movie search app
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
-
-## Technologies Used
-
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+This is a movie search app, that has search page, detail page, and add to watchlist functionality
 
 ## How to Use
 
-### Use the template with create-next-app
+### Setup env
 
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
-```
+Create an `.env.local` file and add `TMDB_API_KEY=<your-api-key>`
 
 ### Install dependencies
 
@@ -36,16 +22,17 @@ npm install
 npm run dev
 ```
 
-### Setup pnpm (optional)
+### Prisma
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+Prisma is already added, migrations and db are already present.
+No setup required for prisma.
 
-```bash
-public-hoist-pattern[]=*@nextui-org/*
-```
+### Demo
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+![Desktop Dark Detail](./demo_images/desktop_dark_detail.png)
+![Desktop Light Detail](./demo_images/desktop_light_detail.png)
+![Desktop Dark Main](./demo_images/desktop_dark_main.png)
+![Desktop Light Main](./demo_images/desktop_light_main.png)
+![Mobile Dark Detail](./demo_images/mobile_dark_detail.png)
+![Mobile Light Detail](./demo_images/mobile_light_detail.png)
+![Mobile Light Main](./demo_images/mobile_light_main.png)
