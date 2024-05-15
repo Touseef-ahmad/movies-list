@@ -10,7 +10,12 @@ import { SearchIcon } from "@/components/icons";
 import { Kbd } from "@nextui-org/kbd";
 import { Pagination } from "@nextui-org/react";
 import { ApiResponse, watchlist } from "./utils/types";
-import { fetchNowPlaying, getWatchlist } from "./utils/api";
+import {
+  addToWatchlist,
+  fetchNowPlaying,
+  getWatchlist,
+  removeFromWatchList,
+} from "./utils/api";
 
 export default function Home() {
   const [movies, setMovies] = useState<ApiResponse | null>(null);
@@ -19,7 +24,7 @@ export default function Home() {
   const search = searchParams.get("query");
   const [searchInputValue, setSearchInputValue] = useState("iron man");
   const [page, setPage] = useState(1);
-  console.log(watchList);
+
   const debouncedSearchMovies = debounce(
     async (page: number, query?: string) => {
       const movies = await fetchNowPlaying(page, query);
@@ -33,10 +38,22 @@ export default function Home() {
   }, [page, searchInputValue]);
 
   useEffect(() => {
-    const query = search || "iron man";
-    fetchNowPlaying(page, query).then((data) => setMovies(data));
-    const watchList = getWatchlist().then((data) => setWatchList(data));
-  }, [search]);
+    const fetchData = async () => {
+      try {
+        const query = search || "iron man";
+        const moviesData = await fetchNowPlaying(page, query);
+        setMovies(moviesData);
+
+        const watchListData = await getWatchlist();
+        setWatchList(watchListData);
+      } catch (error) {
+        // Handle errors here
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [search, page]);
 
   const searchInput = (
     <Input
@@ -65,20 +82,27 @@ export default function Home() {
     <section className="flex flex-col items-center">
       <div className="max-w-screen-md "> {searchInput}</div>
       <div className="flex flex-wrap items-center justify-center gap-4 py-8 md:py-10">
-        {movies?.data.results?.map((movie) => (
-          <MovieCard
-            addedToWatchlist={Boolean(
-              watchList?.filter((watch) => watch.movie_id === `${movie.id}`)
-                .length
-            )}
-            key={movie.id}
-            title={movie.title}
-            imageUrl={movie.poster_path}
-            label={movie.release_date}
-            rating={movie.vote_average}
-            movie_id={movie.id}
-          />
-        ))}
+        {movies?.data.results?.map((movie) => {
+          const isAlreadyIncluded = Boolean(
+            watchList?.filter((watch) => watch.id === movie.id).length
+          );
+          return (
+            <MovieCard
+              onClickButton={async () => {
+                if (!isAlreadyIncluded) {
+                  await addToWatchlist(movie);
+                } else {
+                  await removeFromWatchList(movie.id);
+                }
+                const watchList = await getWatchlist();
+                setWatchList(watchList);
+              }}
+              addedToWatchlist={isAlreadyIncluded}
+              key={movie.id}
+              movie={movie}
+            />
+          );
+        })}
       </div>
       {movies?.data && (
         <Pagination

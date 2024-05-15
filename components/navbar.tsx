@@ -28,6 +28,12 @@ export const Navbar = () => {
             <Logo />
             <p className="font-bold text-inherit">MOVIE SEARCH</p>
           </NextLink>
+          <NextLink
+            className="flex justify-start items-center gap-1"
+            href="/watchlist"
+          >
+            <p className="text-inherit">My watchlist</p>
+          </NextLink>
         </NavbarBrand>
       </NavbarContent>
 

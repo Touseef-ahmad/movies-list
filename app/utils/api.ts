@@ -1,4 +1,4 @@
-import { ApiResponse, MovieResponse, watchlist } from "./types";
+import { ApiResponse, Movie, MovieResponse, watchlist } from "./types";
 
 const BASE_URL = "http://localhost:3000/api";
 
@@ -85,7 +85,7 @@ export async function fetchGenres(): Promise<ApiResponse | null> {
 }
 
 export async function addToWatchlist(
-  movieId: string
+  movie: Partial<Movie>
 ): Promise<watchlist | null> {
   try {
     const response = await fetch(`${BASE_URL}/watchlist`, {
@@ -93,7 +93,7 @@ export async function addToWatchlist(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ movie_id: movieId }),
+      body: JSON.stringify({ movie }),
     });
 
     return await response.json();
@@ -111,6 +111,23 @@ export async function getWatchlist(): Promise<watchlist[] | null> {
     return data;
   } catch (error) {
     console.error("Error fetching watchlist:", error);
+    return null;
+  }
+}
+
+export async function removeFromWatchList(id: number) {
+  try {
+    const response = await fetch(`${BASE_URL}/watchlist`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ movieId: id }),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding to watchlist:", error);
     return null;
   }
 }

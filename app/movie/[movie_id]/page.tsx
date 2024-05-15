@@ -1,13 +1,49 @@
-import { fetchMovieById } from "@/app/utils/api";
-import { Image } from "@nextui-org/react";
+"use client";
 
-export default async function MovieDetailPage({
+import {
+  addToWatchlist,
+  fetchMovieById,
+  getWatchlist,
+  removeFromWatchList,
+} from "@/app/utils/api";
+import { Movie, watchlist } from "@/app/utils/types";
+import { Image } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+
+export default function MovieDetailPage({
   params,
 }: {
   params: { movie_id: string };
 }) {
-  const data = await fetchMovieById(params.movie_id);
-  const movie = data?.data;
+  const [movie, setMovie] = useState<Movie>();
+  const [watchList, setWatchList] = useState<watchlist[] | null>();
+
+  useEffect(() => {
+    const fetchMovieAndWatchList = async () => {
+      const data = await fetchMovieById(params.movie_id);
+      const movie = data?.data;
+      setMovie(movie);
+      const watchList = await getWatchlist();
+      setWatchList(watchList);
+    };
+    fetchMovieAndWatchList();
+  }, [params.movie_id]);
+
+  const isAlreadyIncluded = Boolean(
+    watchList?.filter((watch) => watch.id === movie?.id).length
+  );
+
+  console.log(watchList, movie, isAlreadyIncluded);
+
+  const addToWatchList = async () => {
+    if (!isAlreadyIncluded && movie) {
+      await addToWatchlist(movie);
+    } else if (movie?.id) {
+      await removeFromWatchList(movie?.id);
+    }
+    const watchList = await getWatchlist();
+    setWatchList(watchList);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,8 +66,11 @@ export default async function MovieDetailPage({
               <p className="text-lg text-inherit">
                 Rating: {movie?.vote_average}/10
               </p>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
-                Add to watchlist
+              <button
+                onClick={addToWatchList}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+              >
+                {isAlreadyIncluded ? "Added to watchlist" : "Add to watchlist"}
               </button>
             </div>
           </div>
