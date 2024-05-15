@@ -11,5 +11,17 @@ datasource db {
 }
 
 model Watchlist {
-  movie_id String  @unique
+  id                Int      @id
+  adult             Boolean?
+  backdrop_path      String?
+  original_language  String?
+  original_title     String?
+  overview          String?
+  popularity        Float?
+  poster_path        String?
+  release_date       DateTime?
+  title             String?
+  video             Boolean?
+  vote_average       Float?
+  vote_count         Int?
 }
