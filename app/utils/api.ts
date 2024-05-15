@@ -1,8 +1,17 @@
 import { ApiResponse } from "./types";
+
 const BASE_URL = "http://localhost:3000/api";
-export async function fetchNowPlaying(): Promise<ApiResponse | null> {
+
+export async function fetchNowPlaying(
+  page: number,
+  query?: string | null
+): Promise<ApiResponse | null> {
   try {
-    const response = await fetch(`${BASE_URL}/movies/now_playing`);
+    let url = `${BASE_URL}/discover?page=${page}`;
+
+    if (query) url += `&query=${query}`;
+
+    const response = await fetch(url);
 
     return await response.json();
   } catch (error) {
