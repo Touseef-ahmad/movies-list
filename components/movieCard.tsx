@@ -1,3 +1,4 @@
+import { addToWatchlist } from "@/app/utils/api";
 import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import Link from "next/link";
 
@@ -7,6 +8,7 @@ type MovieCardProps = {
   label: string;
   rating: string | number;
   movie_id: number;
+  addedToWatchlist?: boolean;
 };
 
 const MovieCard = ({
@@ -15,6 +17,7 @@ const MovieCard = ({
   label,
   rating,
   movie_id,
+  addedToWatchlist,
 }: MovieCardProps) => {
   return (
     <Link href={`/movie/${movie_id}`}>
@@ -42,8 +45,14 @@ const MovieCard = ({
               <p className="text-inherit text-tiny">Ratings: {rating}</p>
             )}
           </div>
-          <Button className="text-tiny" color="primary" radius="full" size="md">
-            Add to watchlist
+          <Button
+            onClick={() => addToWatchlist(`${movie_id}`)}
+            className="text-tiny"
+            color={addedToWatchlist ? "default" : "primary"}
+            radius="full"
+            size="md"
+          >
+            {addedToWatchlist ? "Added to watchlist" : "Add to watchlist"}
           </Button>
         </CardFooter>
       </Card>

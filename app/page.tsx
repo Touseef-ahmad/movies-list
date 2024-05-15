@@ -9,16 +9,17 @@ import { Input } from "@nextui-org/input";
 import { SearchIcon } from "@/components/icons";
 import { Kbd } from "@nextui-org/kbd";
 import { Pagination } from "@nextui-org/react";
-import { ApiResponse } from "./utils/types";
-import { fetchNowPlaying } from "./utils/api";
+import { ApiResponse, watchlist } from "./utils/types";
+import { fetchNowPlaying, getWatchlist } from "./utils/api";
 
 export default function Home() {
   const [movies, setMovies] = useState<ApiResponse | null>(null);
+  const [watchList, setWatchList] = useState<watchlist[] | null>(null);
   const searchParams = useSearchParams();
   const search = searchParams.get("query");
   const [searchInputValue, setSearchInputValue] = useState("iron man");
   const [page, setPage] = useState(1);
-
+  console.log(watchList);
   const debouncedSearchMovies = debounce(
     async (page: number, query?: string) => {
       const movies = await fetchNowPlaying(page, query);
@@ -34,6 +35,7 @@ export default function Home() {
   useEffect(() => {
     const query = search || "iron man";
     fetchNowPlaying(page, query).then((data) => setMovies(data));
+    const watchList = getWatchlist().then((data) => setWatchList(data));
   }, [search]);
 
   const searchInput = (
@@ -65,6 +67,9 @@ export default function Home() {
       <div className="flex flex-wrap items-center justify-center gap-4 py-8 md:py-10">
         {movies?.data.results?.map((movie) => (
           <MovieCard
+            addedToWatchlist={Boolean(
+              watchList?.filter((watch) => watch.movie_id == movie.id).length
+            )}
             key={movie.id}
             title={movie.title}
             imageUrl={movie.poster_path}

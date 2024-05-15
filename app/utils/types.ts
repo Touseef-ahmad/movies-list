@@ -27,3 +27,5 @@ export type ApiResponse = {
 export type MovieResponse = {
   data: Movie;
 };
+
+export type watchlist = { movie_id: string };
