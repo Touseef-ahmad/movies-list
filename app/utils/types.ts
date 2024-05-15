@@ -23,3 +23,7 @@ export type ApiResponse = {
     total_results: number;
   };
 };
+
+export type MovieResponse = {
+  data: Movie;
+};

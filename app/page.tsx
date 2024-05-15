@@ -67,9 +67,10 @@ export default function Home() {
           <MovieCard
             key={movie.id}
             title={movie.title}
-            imageUrl={movie.backdrop_path}
-            label="Now Playing"
-            rating={movie.popularity}
+            imageUrl={movie.poster_path}
+            label={movie.release_date}
+            rating={movie.vote_average}
+            movie_id={movie.id}
           />
         ))}
       </div>

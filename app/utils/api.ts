@@ -1,4 +1,4 @@
-import { ApiResponse } from "./types";
+import { ApiResponse, MovieResponse } from "./types";
 
 const BASE_URL = "http://localhost:3000/api";
 
@@ -20,13 +20,26 @@ export async function fetchNowPlaying(
   }
 }
 
+export async function fetchMovieById(
+  id: string
+): Promise<MovieResponse | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/movie/${id}`);
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching movie", error);
+    return null;
+  }
+}
+
 export async function searchMovies(query: string): Promise<ApiResponse | null> {
   try {
     const response = await fetch(`${BASE_URL}/discover?query=${query}`);
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching now playing movies:", error);
+    console.error("Error searching movies:", error);
     return null;
   }
 }
@@ -57,16 +70,6 @@ export async function fetchUpcoming(): Promise<ApiResponse | null> {
     return await response.json();
   } catch (error) {
     console.error("Error fetching upcoming movies:", error);
-    return null;
-  }
-}
-
-export async function fetchMovieById(movieId: string) {
-  try {
-    const response = await fetch(`/api/movie/${movieId}`);
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching movie by ID:", error);
     return null;
   }
 }
