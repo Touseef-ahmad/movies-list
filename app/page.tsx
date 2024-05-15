@@ -68,7 +68,8 @@ export default function Home() {
         {movies?.data.results?.map((movie) => (
           <MovieCard
             addedToWatchlist={Boolean(
-              watchList?.filter((watch) => watch.movie_id == movie.id).length
+              watchList?.filter((watch) => watch.movie_id === `${movie.id}`)
+                .length
             )}
             key={movie.id}
             title={movie.title}
